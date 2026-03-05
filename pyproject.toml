@@ -1,0 +1,14 @@
+[project]
+name = "postgenerator-linkedin"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "altair==4.2.2",
+    "dotenv>=0.9.9",
+    "langchain-groq>=1.1.2",
+    "matplotlib>=3.10.8",
+    "pandas>=3.0.1",
+    "streamlit>=1.19.0",
+]
