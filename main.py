@@ -24,25 +24,40 @@ def main():
     
     # --- Tab 1: Generator ---
     with tab1:
-        fs = FewShotPosts()
-        
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            tags = fs.get_tags()
-            selected_tag = st.selectbox("Topic/Tag", options=tags if tags else ["No data available"])
-        with col2:
-            selected_length = st.selectbox("Length", options=LENGTH_OPTIONS)
-        with col3:
-            selected_language = st.selectbox("Language", options=LANGUAGE_OPTIONS)
+        # 1. Select Processed File first
+        if os.path.exists(PROCESSED_DIR):
+            processed_files = [f for f in os.listdir(PROCESSED_DIR) if f.endswith(".json")]
+        else:
+            processed_files = []
 
-        if st.button("Generate Post"):
-            if not tags:
-                st.warning("Please process some data first in the 'Data Manager' tab.")
-            else:
-                with st.spinner("Writing post..."):
-                    post = generate_post(selected_length, selected_language, selected_tag)
-                    st.markdown("### Generated Post")
-                    st.text_area("Copy your post", value=post, height=300)
+        if not processed_files:
+            st.warning("No processed data found. Please enrich some files in the 'Data Manager' tab.")
+            selected_file = None
+        else:
+            selected_file = st.selectbox("Select Profile/Collection", options=processed_files)
+        
+        if selected_file:
+            file_path = os.path.join(PROCESSED_DIR, selected_file)
+            fs = FewShotPosts(file_path)
+            
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                tags = fs.get_tags()
+                selected_tag = st.selectbox("Topic/Tag", options=tags if tags else ["No tags found"])
+            with col2:
+                # In larger datasets we might want to dynamic check, but for now use constant
+                selected_length = st.selectbox("Length", options=LENGTH_OPTIONS)
+            with col3:
+                selected_language = st.selectbox("Language", options=LANGUAGE_OPTIONS)
+
+            if st.button("Generate Post"):
+                if not tags:
+                    st.error("No tags found in this file.")
+                else:
+                    with st.spinner("Writing post..."):
+                        post = generate_post(selected_length, selected_language, selected_tag, fs)
+                        st.markdown("### Generated Post")
+                        st.text_area("Copy your post", value=post, height=300)
 
     # --- Tab 2: Data Manager ---
     with tab2:

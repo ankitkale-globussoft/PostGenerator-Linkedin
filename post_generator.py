@@ -12,7 +12,7 @@ def get_length_str(length):
         return "11 to 15 lines"
     
 
-def get_prompt(length, language, topic):
+def get_prompt(length, language, topic, few_shot_instance=None):
     length_str = get_length_str(length)
 
     prompt = f'''
@@ -25,18 +25,19 @@ def get_prompt(length, language, topic):
     The script for the generated post should always be in English
     '''
     
-    examples = few_shot.get_filtered_posts(length_str, language, topic)
-    if len(examples)>0:
-        prompt += "4) Use the writing style as per following examples."
-        for i, post in enumerate(examples):
-            post_text = post['text']
-            prompt = f"\n\n Example{i} \n\n {post_text}"
-            if i == 1: # since we need to  paas only two examples
-                break
+    if few_shot_instance:
+        examples = few_shot_instance.get_filtered_posts(length, language, topic)
+        if len(examples) > 0:
+            prompt += "\n4) Use the writing style as per following examples."
+            for i, post in enumerate(examples):
+                post_text = post['text']
+                prompt += f"\n\n Example {i+1} \n\n {post_text}"
+                if i == 1: # Limit to 2 examples
+                    break
     return prompt
 
-def generate_post(length, language, topic):
-    prompt = get_prompt(length, language, topic)
+def generate_post(length, language, topic, few_shot_instance=None):
+    prompt = get_prompt(length, language, topic, few_shot_instance)
     response = llm.invoke(prompt)
     return response.content
 

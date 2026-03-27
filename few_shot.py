@@ -17,33 +17,37 @@ class FewShotPosts:
         # Remove surrogate pairs that cause encoding errors (\ud800-\udfff)
         return re.sub(r'[\ud800-\udfff]', '', text)
 
-    def load_posts(self, directory):
+    def load_posts(self, path):
         all_posts = []
-        if not os.path.exists(directory):
-            os.makedirs(directory, exist_ok=True)
+        if not os.path.exists(path):
+            if not os.path.dirname(path): # If it's just a folder name that doesn't exist
+                 os.makedirs(path, exist_ok=True)
             self.df = pd.DataFrame()
             return
 
-        for filename in os.listdir(directory):
-            if filename.endswith(".json"):
-                file_path = os.path.join(directory, filename)
-                try:
-                    with open(file_path, encoding="utf-8") as f:
-                        posts = json.load(f)
-                    
-                    # Ensure it's a list
-                    if not isinstance(posts, list):
-                        posts = [posts]
-                    
-                    # Sanitization: Clean all strings in every post to remove surrogates
-                    for post in posts:
-                        for key, value in post.items():
-                            if isinstance(value, str):
-                                post[key] = self.clean_text(value)
-                    
-                    all_posts.extend(posts)
-                except Exception as e:
-                    print(f"Error loading {filename}: {e}")
+        # Case 1: Path is a single file
+        if os.path.isfile(path):
+            files_to_load = [path]
+        else:
+            # Case 2: Path is a directory
+            files_to_load = [os.path.join(path, f) for f in os.listdir(path) if f.endswith(".json")]
+
+        for file_path in files_to_load:
+            try:
+                with open(file_path, encoding="utf-8") as f:
+                    posts = json.load(f)
+                
+                if not isinstance(posts, list):
+                    posts = [posts]
+                
+                for post in posts:
+                    for key, value in post.items():
+                        if isinstance(value, str):
+                            post[key] = self.clean_text(value)
+                
+                all_posts.extend(posts)
+            except Exception as e:
+                print(f"Error loading {file_path}: {e}")
 
         if not all_posts:
             self.df = pd.DataFrame()
