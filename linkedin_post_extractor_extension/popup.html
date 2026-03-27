@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Extractor</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Post Extractor</h1>
+            <p>Scrape LinkedIn posts with ease</p>
+        </header>
+
+        <div class="main-content">
+            <div class="form-group">
+                <label for="max-posts">Maximum Posts</label>
+                <input type="number" id="max-posts" value="10" min="1" max="500">
+            </div>
+
+            <div class="form-group">
+                <label>Target Folder</label>
+                <div class="folder-selection">
+                    <button id="select-folder" class="secondary-btn">Select Folder</button>
+                    <span id="folder-name" class="status-text">None selected</span>
+                </div>
+            </div>
+
+            <button id="start-scraping" class="primary-btn">Start Scraping</button>
+            <button id="download-btn" class="primary-btn hidden">Download & Save JSON</button>
+
+            <div id="progress-container" class="hidden">
+                <div class="progress-info">
+                    <span id="progress-status">Scraping...</span>
+                    <span id="progress-percent">0/10</span>
+                </div>
+                <div class="progress-track">
+                    <div id="progress-bar"></div>
+                </div>
+            </div>
+            
+            <div id="status-message" class="status-message hidden"></div>
+        </div>
+        
+        <footer>
+            <div id="last-saved" class="hidden">Last saved: <span id="save-time">-</span></div>
+        </footer>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>
