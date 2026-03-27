@@ -18,7 +18,6 @@ def process_posts(raw_file_path, processed_folder="data/processed_posts"):
 
     enriched_posts = []
     base_name = os.path.basename(raw_file_path)
-    # The output filename will remove 'raw_' prefix if exists
     clean_name = base_name.replace("raw_", "")
     processed_file_path = os.path.join(processed_folder, clean_name)
 
@@ -27,12 +26,11 @@ def process_posts(raw_file_path, processed_folder="data/processed_posts"):
     with open(raw_file_path, encoding="utf-8") as file:
         posts = json.load(file)
         for post in posts:
-            # Clean post text before processing
+            
             if 'text' in post:
                 post['text'] = clean_text(post['text'])
             
             metadata = extract_metadata(post)
-            # Merge original post with extracted metadata
             enriched_post = {**post, **metadata}
             enriched_posts.append(enriched_post)
     
@@ -50,7 +48,6 @@ def process_posts(raw_file_path, processed_folder="data/processed_posts"):
 
     print(f"Successfully processed. Saved to {processed_file_path}")
     
-    # Delete the raw source file after success
     os.remove(raw_file_path)
     print(f"Deleted raw file: {raw_file_path}")
     return processed_file_path
@@ -112,5 +109,4 @@ def extract_metadata(post):
     return res
 
 if __name__ == "__main__":
-    # Test with a sample if available
     pass
